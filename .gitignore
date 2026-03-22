@@ -1,0 +1,70 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Node/Frontend
+node_modules/
+npm-debug.log
+yarn-error.log
+.next/
+out/
+.turbo/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+.jupyter/
+*.ipynb
+
+# OS
+.DS_Store
+.env.local
+.env.*.local
+thumbs.db
