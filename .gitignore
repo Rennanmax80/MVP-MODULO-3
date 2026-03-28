@@ -61,7 +61,7 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 .jupyter/
-*.ipynb
+ML/
 
 # OS
 .DS_Store

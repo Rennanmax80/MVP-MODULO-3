@@ -1,58 +1,65 @@
 # MVP - Classificacao de Aceitacao de Veiculos
 
-Este projeto implementa um MVP completo de classificacao com machine learning usando o dataset Car Evaluation, contemplando:
+Este repositorio implementa um MVP de classificacao de veiculos com Machine Learning, com fluxo completo entre treinamento, API e interface web.
 
-- notebook de treinamento e comparacao de modelos no Google Colab
-- backend em FastAPI com modelo embarcado
-- frontend em Next.js para entrada de dados e exibicao da predicao
-- teste automatizado com PyTest para validar o desempenho minimo do modelo
-- workflow de CI no GitHub Actions
+## Visao Geral
 
-## Tema do Problema
+O sistema classifica a aceitacao de um veiculo com base em 6 atributos categoricos:
 
-O objetivo do projeto e classificar a aceitacao de um veiculo com base em atributos categoricos como preco de compra, custo de manutencao, numero de portas, capacidade de passageiros, porta-malas e nivel de seguranca.
+- preco de compra (`buying`)
+- custo de manutencao (`maint`)
+- numero de portas (`doors`)
+- capacidade de passageiros (`persons`)
+- tamanho do porta-malas (`lug_boot`)
+- nivel de seguranca (`safety`)
 
-As classes previstas pelo modelo sao:
+Classes previstas pelo modelo:
 
 - `unacc`: Inaceitavel
 - `acc`: Aceitavel
 - `good`: Bom
 - `vgood`: Muito Bom
 
-## Estrutura do Projeto
+Dataset utilizado: UCI Car Evaluation Database.
+
+## Arquitetura
 
 ```text
 Diabetes-ML-Project/
 |- backend/
-|  |- main.py
-|  |- model.pkl
-|  |- schemas.py
+|  |- main.py                  # API FastAPI e endpoint /predict
+|  |- schemas.py               # validacao de entrada com Pydantic
+|  |- model.pkl                # modelo treinado
+|  |- requirements.txt
 |  \- tests/
+|     \- test_model.py         # validacao de desempenho do modelo
 |- frontend/
-|  \- app/
+|  |- app/
+|  |  \- page.tsx              # formulario e exibicao de resultado
+|  |- package.json
+|  \- ...
 |- ML/
-|  \- notebook.ipynb
+|  \- notebook.ipynb           # treinamento e comparacao de modelos
 |- .github/workflows/
 |  \- ci.yml
+|- mvp_puc_notebook.ipynb
 |- requirements.txt
 \- readme.MD
 ```
 
-## Notebook do Google Colab
+Nota: o nome da pasta raiz ainda contem `Diabetes-ML-Project`, mas o dominio funcional do projeto e avaliacao de veiculos.
 
-Link atual do notebook:
+## Fluxo da Aplicacao
 
-https://colab.research.google.com/drive/16TfnY7MqW_mlUc1ukQv54tabZlyLjRqn
-
-O notebook em [ML/notebook.ipynb](ML/notebook.ipynb) executa:
-
-- carga do dataset via URL publica
-- separacao holdout entre treino e teste
-- preprocessamento de variaveis categoricas
-- treinamento com KNN, Arvore de Classificacao, Naive Bayes e SVM
-- otimizacao de hiperparametros com GridSearchCV
-- comparacao dos resultados com metricas
-- exportacao do melhor modelo para `model.pkl`
+1. Usuario preenche o formulario no frontend (Next.js).
+2. Frontend envia `POST /predict` para o backend (FastAPI).
+3. Backend valida os dados via `CarEvaluationData`.
+4. API carrega `model.pkl` e executa `predict` (e `predict_proba`, quando disponivel).
+5. Backend retorna JSON com:
+	 - `prediction`
+	 - `prediction_label`
+	 - `confidence`
+6. Frontend exibe classe e confianca para o usuario.
 
 ## Requisitos
 
@@ -60,7 +67,7 @@ O notebook em [ML/notebook.ipynb](ML/notebook.ipynb) executa:
 - Node.js 20+
 - npm
 
-## Configuracao do Ambiente Python
+## Setup do Ambiente Python
 
 Na raiz do projeto:
 
@@ -70,7 +77,7 @@ venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-## Como Rodar o Backend
+## Executar Backend
 
 ```powershell
 venv\Scripts\Activate.ps1
@@ -78,15 +85,27 @@ cd backend
 python main.py
 ```
 
-API disponivel em:
+API: `http://127.0.0.1:8000`
 
-`http://127.0.0.1:8000`
+Rotas principais:
 
-Endpoint principal:
-
+- `GET /`
 - `POST /predict`
 
-## Como Rodar o Frontend
+Exemplo de payload para `POST /predict`:
+
+```json
+{
+	"buying": "low",
+	"maint": "low",
+	"doors": "4",
+	"persons": "4",
+	"lug_boot": "big",
+	"safety": "high"
+}
+```
+
+## Executar Frontend
 
 ```powershell
 cd frontend
@@ -94,83 +113,60 @@ npm install
 npm run dev
 ```
 
-Aplicacao disponivel em:
+Aplicacao: `http://localhost:3000`
 
-`http://localhost:3000`
+## Testes
 
-## Como Executar os Testes
-
-Com o ambiente Python ativado:
+Com ambiente Python ativado:
 
 ```powershell
 cd backend
 python -m pytest tests -q
 ```
 
-O teste automatizado em [backend/tests/test_model.py](backend/tests/test_model.py) verifica se o modelo atende aos thresholds minimos definidos para o projeto.
+O teste em `backend/tests/test_model.py` valida os thresholds minimos:
 
-Thresholds atuais:
+- accuracy >= `0.95`
+- macro F1 >= `0.95`
 
-- accuracy minima: `0.95`
-- macro F1 minima: `0.95`
+## Treinamento do Modelo
 
-## Workflow CI
+Notebook principal: `ML/notebook.ipynb`
 
-O workflow de integracao continua esta em [.github/workflows/ci.yml](.github/workflows/ci.yml).
+Notebook Colab (referencia):
 
-Ele executa automaticamente em `push` e `pull_request` na branch `main` e realiza:
+https://colab.research.google.com/drive/16TfnY7MqW_mlUc1ukQv54tabZlyLjRqn
 
-- checkout do repositorio
-- instalacao do Python 3.12
-- instalacao das dependencias do projeto
-- execucao do PyTest no backend
+Etapas cobertas no notebook:
 
-## Exemplo de Entrada no Frontend
+- carga do dataset
+- split treino/teste
+- preprocessamento de variaveis categoricas
+- treinamento de modelos (KNN, Arvore, Naive Bayes, SVM)
+- ajuste de hiperparametros com GridSearchCV
+- exportacao do melhor modelo para `backend/model.pkl`
 
-Um exemplo que tende a gerar boa avaliacao:
+## CI
 
-- Preco de Compra: `Baixo`
-- Custo de Manutencao: `Baixo`
-- Numero de Portas: `4`
-- Capacidade de Passageiros: `4 pessoas`
-- Porta-Malas: `Grande`
-- Nivel de Seguranca: `Alto`
+Pipeline: `.github/workflows/ci.yml`
 
-## Reflexao Sobre Software Seguro
+Executa em `push` e `pull_request` na branch `main`, incluindo instalacao de dependencias e execucao dos testes do backend.
 
-Apesar de este dataset nao conter dados pessoais, em um problema real de avaliacao de veiculos seria importante aplicar boas praticas de software seguro, como:
+## Entrega (MVP da Pos)
 
-- validacao estrita das entradas recebidas pela API
-- controle de acesso aos dados utilizados no treinamento
-- rastreabilidade da origem dos dados
-- protecao contra alteracoes indevidas no arquivo do modelo
-- anonimização de identificadores caso o problema envolva clientes, placas ou historico de uso
+Checklist sugerido:
 
-## Entrega no GitHub
-
-Para a entrega, o repositorio publico deve conter:
-
-- notebook executavel no Google Colab
-- codigo completo da aplicacao full stack
-- teste automatizado do modelo
-- arquivos auxiliares necessarios para execucao
-- link do video de apresentacao
-
-## Video de Apresentacao
-
-Adicionar aqui o link final do video de ate 3 minutos:
-
-- `VIDEO_LINK_AQUI`
-
-## Checklist Final de Submissao
-
-- [ ] notebook executa do inicio ao fim no Colab
-- [ ] modelo exportado corretamente para `backend/model.pkl`
+- [ ] notebook executa do inicio ao fim
+- [ ] `backend/model.pkl` atualizado
 - [ ] backend sobe sem erros
 - [ ] frontend sobe sem erros
-- [ ] predicao funciona pela interface
-- [ ] PyTest passa localmente
-- [ ] workflow do GitHub Actions executa com sucesso
-- [ ] repositorio esta publico
-- [ ] link do notebook no Colab esta valido
-- [ ] link do video foi incluido no README
+- [ ] predicao funciona na interface
+- [ ] testes passam localmente
+- [ ] CI executa com sucesso
+- [ ] repositorio publico
+- [ ] link do Colab valido
+- [ ] link do video incluido abaixo
+
+Video de apresentacao (ate 3 min):
+
+- `VIDEO_LINK_AQUI`
