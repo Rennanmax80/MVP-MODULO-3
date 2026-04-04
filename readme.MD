@@ -169,4 +169,4 @@ Checklist sugerido:
 
 Video de apresentacao (ate 3 min):
 
-- `VIDEO_LINK_AQUI`
+- [`VIDEO_LINK_AQUI`](https://drive.google.com/file/d/1uPiDQKOfTpemPAZycV000xeqXhEJMVC1/view?usp=sharing)
